@@ -8,6 +8,18 @@ const headers = {
 }
 
 describe('articleManager API - Article Routes', () => {
+  // Wait until server is available
+  beforeAll(async (done) => {
+    while(1) {
+      try {
+        await request.get('http://localhost:3000');
+        break;
+      } catch(err) {
+      }
+    }
+    done();
+  });
+
   it('should return 403 if no token is provided', async(done) => {
     try {
       await request.get(baseUrl, {
@@ -76,7 +88,6 @@ describe('articleManager API - Article Routes', () => {
   it('should return 200 when updating an article', async (done) => {
     try {
       await request.put(`${baseUrl}/1`, {
-        method: 'PUT',
         body: {
           userId: 1,
           title: 'An Artcile 2',
