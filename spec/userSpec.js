@@ -81,10 +81,10 @@ describe('articleManager API - User Routes', () => {
         headers
       });
       expect(response).toBeDefined();
+      expect(response).not.toBeNull();
       expect(response.length).toBe(24);
       id = response;
     } catch(err) {
-      console.error(err);
       fail('not 200');
     } finally {
       done();
@@ -94,6 +94,7 @@ describe('articleManager API - User Routes', () => {
   it('should insert user to DB', async (done) => {
     const result = await db.collection('users').findOne({_id: new ObjectId(id)});
     expect(result).toBeDefined();
+    expect(result).not.toBeNull();
     expect(result.name).toBe('Test User');
     expect(result.avatar).toBe('https://api.adorable.io/avatars/285/abott@adorable.png');
     done();
@@ -101,7 +102,8 @@ describe('articleManager API - User Routes', () => {
 
   // Cleanup DB
   afterAll(async (done) => {
-    await db.collection('users').remove({_id: new ObjectId(id)});
+    await db.collection('users').deleteOne({_id: new ObjectId(id)});
+    client.close();
     done();
   })
 });
