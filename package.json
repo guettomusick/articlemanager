@@ -11,8 +11,11 @@
   "author": "Fernando Caamaño <fernando.c.caamano@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.18.3",
+    "compression": "^1.7.3",
     "express": "^4.16.4",
-    "mongodb": "^3.1.13"
+    "mongodb": "^3.1.13",
+    "morgan": "^1.9.1"
   },
   "devDependencies": {
     "jasmine": "^3.3.1",
