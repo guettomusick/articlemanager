@@ -4,6 +4,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use('/api/v1/user', require('./routes/user').router());
+app.use('/api/v1/article', require('./routes/article').router());
 
 app.get('/', (req, res) => {
   res.sendStatus(200);

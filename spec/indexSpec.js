@@ -6,7 +6,7 @@ const baseUrl = 'http://localhost:3000';
 describe("articleManager API", () => {
   it("should get the root endpoint", async (done) => {
     try {
-      await request.get(baseUrl, {resolveWithFullResponse: true});
+      await request.get(baseUrl);
     } catch(err) {
       fail('no response from server');
     } finally {
