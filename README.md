@@ -5,6 +5,10 @@ Article Manage API for Technical Assessment Back End Developer.
 
 This is an Backend API built using expressJS, it manages articles and users and persist the data on a mongo Data Base.
 
+## Requirement
+
+- Running MongoDB Server
+
 ## Installation
 
 ```
@@ -24,6 +28,16 @@ Running on a different port
 $ PORT=9999 npm start
 ```
 Now api is running on port 9999
+
+Setting up a different ApiKey
+```
+$ TOKEN=123456 npm start
+```
+
+Setting up a different MongoDB Server or DB
+```
+$ MONGO="mongodb://localhost:27018" DB="anotherDB" npm start
+```
 
 ## API Docs
 
