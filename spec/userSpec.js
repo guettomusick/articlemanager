@@ -1,4 +1,11 @@
 const request = require('request-promise');
+const { MongoClient, ObjectId } = require('mongodb');
+
+const mongoHost = 'mongodb://localhost:27017';
+const dbName = 'articleman';
+
+const client = new MongoClient(mongoHost);
+
 require('../index.js');
 
 const baseUrl = 'http://localhost:3000/api/v1/user';
@@ -7,7 +14,28 @@ const headers = {
   'x-access-token': authKey
 }
 
-describe("articleManager API - User Routes", () => {
+describe('articleManager API - User Routes', () => {
+  let db, id;
+  // Wait until server is available
+  beforeAll(async (done) => {
+    while(1) {
+      try {
+        await request.get('http://localhost:3000');
+        break;
+      } catch(err) {
+      }
+    }
+
+    client.connect((err) => {
+      if (err) {
+        return fail('Failed to connect to MongoDB server, shutting down');
+      }
+    
+      db = client.db(dbName);
+      done();
+    });
+  });
+
   it('should return 403 if no token is provided', async(done) => {
     try {
       await request.post(baseUrl, {
@@ -42,9 +70,9 @@ describe("articleManager API - User Routes", () => {
     }
   });
 
-  it("should return 200 when posting new user", async (done) => {
+  it('should return 200 when posting new user and return userId', async (done) => {
     try {
-      await request.post(baseUrl, {
+      const response = await request.post(baseUrl, {
         body: {
           name: 'Test User',
           avatar: 'https://api.adorable.io/avatars/285/abott@adorable.png'
@@ -52,10 +80,30 @@ describe("articleManager API - User Routes", () => {
         json: true,
         headers
       });
+      expect(response).toBeDefined();
+      expect(response).not.toBeNull();
+      expect(response.length).toBe(24);
+      id = response;
     } catch(err) {
       fail('not 200');
     } finally {
       done();
     }
   });
+
+  it('should insert user to DB', async (done) => {
+    const result = await db.collection('users').findOne({_id: new ObjectId(id)});
+    expect(result).toBeDefined();
+    expect(result).not.toBeNull();
+    expect(result.name).toBe('Test User');
+    expect(result.avatar).toBe('https://api.adorable.io/avatars/285/abott@adorable.png');
+    done();
+  });
+
+  // Cleanup DB
+  afterAll(async (done) => {
+    await db.collection('users').deleteOne({_id: new ObjectId(id)});
+    client.close();
+    done();
+  })
 });

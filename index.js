@@ -21,14 +21,14 @@ client.connect((err) => {
   
   console.log("Successfully to MongoDB server");
 
-  const conn = client.db(dbName);
+  const db = client.db(dbName);
 
-  conn.on('close', () => {
+  db.on('close', () => {
     console.error('Drop connection to MongoDB server, shutting down');
     return process.exit(1);
   })
 
-  conn.on('error', () => {
+  db.on('error', () => {
     console.error('Drop connection to MongoDB server, shutting down');
     return process.exit(1);
   })
@@ -40,8 +40,8 @@ client.connect((err) => {
   app.use(morgan('dev'));
 
   app.use('/api/v1/api-docs', express.static('./api-docs'));
-  app.use('/api/v1/user', auth.isAuthorized, require('./routes/user').router(conn));
-  app.use('/api/v1/article', auth.isAuthorized, require('./routes/article').router(conn));
+  app.use('/api/v1/user', auth.isAuthorized, require('./routes/user').router(db));
+  app.use('/api/v1/article', auth.isAuthorized, require('./routes/article').router(db));
 
   app.get('/', (req, res) => {
     res.sendStatus(200);

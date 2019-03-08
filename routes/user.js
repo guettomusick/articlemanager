@@ -1,6 +1,6 @@
 const express = require('express');
 
-module.exports.router = (conn) => {
+module.exports.router = (db) => {
   const router = express.Router();
 
   /**
@@ -15,7 +15,26 @@ module.exports.router = (conn) => {
   @apiParam (Request body) {String} avatar Avatar Url
   */
   router.post('/', async (req, res) => {
-    return res.sendStatus(200);
+    // Make only name required
+    if(!req.body.name) {
+      return res.status(400).send('Missing required fields (name)');
+    }
+
+    try {
+      const { ops } = await db.collection('users').insertOne({
+        name: req.body.name,
+        avatar: req.body.avatar
+      });
+
+      if (ops && ops[0]) {
+        res.send(ops[0]._id);
+      } else {
+        res.status(500).send('Error inserting to DB');
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error inserting to DB');
+    }
   });
 
   return router;

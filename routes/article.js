@@ -1,6 +1,6 @@
 const express = require('express');
 
-module.exports.router = (conn) => {
+module.exports.router = (db) => {
   const router = express.Router();
 
   /**
