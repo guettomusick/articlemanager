@@ -14,8 +14,8 @@ app.use(bodyParser.json());
 
 app.use(morgan('dev'));
 
-app.use('/api/v1/user', require('./routes/user').router());
-app.use('/api/v1/article', require('./routes/article').router());
+app.use('/api/v1/user', auth.isAuthorized, require('./routes/user').router());
+app.use('/api/v1/article', auth.isAuthorized, require('./routes/article').router());
 
 app.get('/', (req, res) => {
   res.sendStatus(200);
