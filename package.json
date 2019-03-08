@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "jasmine spec/**/*Spec.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "setup": "node setup.js"
   },
   "author": "Fernando Caamaño <fernando.c.caamano@gmail.com>",
@@ -13,10 +13,5 @@
   "dependencies": {
     "express": "^4.16.4",
     "mongodb": "^3.1.13"
-  },
-  "devDependencies": {
-    "jasmine": "^3.3.1",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.4"
   }
 }
