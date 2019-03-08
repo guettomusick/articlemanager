@@ -5,8 +5,12 @@ const baseUrl = 'http://localhost:3000';
 
 describe("articleManager API", () => {
   it("should get the root endpoint", async (done) => {
-    const result = await request.get(baseUrl, {resolveWithFullResponse: true});
-    expect(result.statusCode).toBe(200);
-    done();
+    try {
+      await request.get(baseUrl, {resolveWithFullResponse: true});
+    } catch(err) {
+      fail('no response from server');
+    } finally {
+      done();
+    }
   });
 });
