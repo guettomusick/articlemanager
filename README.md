@@ -24,3 +24,7 @@ Running on a different port
 $ PORT=9999 npm start
 ```
 Now api is running on port 9999
+
+## API Docs
+
+API Socumentation can be found on host:port/api/v1/api-docs

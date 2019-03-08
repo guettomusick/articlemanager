@@ -14,6 +14,7 @@ app.use(bodyParser.json());
 
 app.use(morgan('dev'));
 
+app.use('/api/v1/api-docs', express.static('./api-docs'));
 app.use('/api/v1/user', auth.isAuthorized, require('./routes/user').router());
 app.use('/api/v1/article', auth.isAuthorized, require('./routes/article').router());
 

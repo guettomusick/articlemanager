@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "test": "jasmine spec/**/*Spec.js",
-    "setup": "node setup.js"
+    "setup": "node setup.js",
+    "apidoc": "apidoc -i routes/ -o ./api-docs"
   },
   "author": "Fernando Caamaño <fernando.c.caamano@gmail.com>",
   "license": "ISC",
