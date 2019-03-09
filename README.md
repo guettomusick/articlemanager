@@ -16,6 +16,14 @@ $ npm install
 $ npm run setup
 ```
 
+If you don't want any dummy data use
+```
+$ npm install
+$ npm run setup-no-dummy
+```
+
+same Environment Variables as npm start apply for Mongo connection when running setup
+
 ## Basic use
 
 Basic usage listening on default port
