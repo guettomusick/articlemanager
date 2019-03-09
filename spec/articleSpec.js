@@ -116,7 +116,11 @@ describe('articleManager API - Article Routes', () => {
         userId: users[0]._id.toString(),
         title: 'An Artcile',
         text: 'Praesent tempor vitae nisl eu pellentesque. Donec in lorem vitae ligula convallis laoreet.',
-        tags: ['Tag1']
+        tags: ['Tag1'],
+        user: {
+          _id: users[0]._id.toString(),
+          name: users[0].name
+        }
       });
     } catch(err) {
       fail('not 200');
