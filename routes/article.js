@@ -63,15 +63,14 @@ module.exports.router = (db) => {
 
     try {
       const results  = await db.collection('articles').find({tags: {$all: req.query.tags}});
-      
-      res.send(await results.toArray());
+      const resultsArr = await results.toArray()
 
-      // if (ops && ops[0]) {
-      //   res.send(ops[0]);
-      // } else {
-      //   res.status(500).send('Error deleting from DB');
-      // }
-      res.send();
+      for(result of resultsArr) {
+        const user = await db.collection('users').findOne({_id: result.userId});
+        result.user = user;
+      }
+      
+      res.send(resultsArr);
     } catch (err) {
       console.error(err);
       res.status(500).send('Error deleting from DB');
