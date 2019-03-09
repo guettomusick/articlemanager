@@ -17,7 +17,7 @@ module.exports.router = (db) => {
   router.post('/', async (req, res) => {
     // Make only name required
     if(!req.body.name) {
-      return res.status(400).send('Missing required fields (name)');
+      return res.status(400).send('Missing required bodyParams (name)');
     }
 
     try {
