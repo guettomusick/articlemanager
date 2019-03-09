@@ -7,6 +7,7 @@
     "start": "node index.js",
     "test": "jasmine spec/**/*Spec.js",
     "setup": "node setup.js",
+    "setup-no-dummy": "node setup.js --no-dummy",
     "apidoc": "apidoc -i routes/ -o ./api-docs"
   },
   "author": "Fernando Caamaño <fernando.c.caamano@gmail.com>",
