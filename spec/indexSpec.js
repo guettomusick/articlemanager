@@ -1,4 +1,6 @@
 const request = require('request-promise');
+const waitForConn = require('./waitForConn');
+
 require('../index.js');
 
 const baseUrl = 'http://localhost:3000';
@@ -6,13 +8,8 @@ const baseUrl = 'http://localhost:3000';
 describe("articleManager API", () => {
   // Wait until server is available
   beforeAll(async (done) => {
-    while(1) {
-      try {
-        await request.get('http://localhost:3000');
-        break;
-      } catch(err) {
-      }
-    }
+    await waitForConn('http://localhost:3000');
+    
     done();
   });
 

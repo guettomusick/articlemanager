@@ -1,5 +1,6 @@
 const request = require('request-promise');
 const { MongoClient, ObjectId } = require('mongodb');
+const waitForConn = require('./waitForConn');
 
 const mongoHost = 'mongodb://localhost:27017';
 const dbName = 'articleman';
@@ -19,13 +20,7 @@ describe('articleManager API - Article Routes', () => {
 
   // Wait until server is available
   beforeAll(async (done) => {
-    while(1) {
-      try {
-        await request.get('http://localhost:3000');
-        break;
-      } catch(err) {
-      }
-    }
+    await waitForConn('http://localhost:3000');
 
     client.connect(async (err) => {
       if (err) {
