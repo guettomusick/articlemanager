@@ -1,4 +1,12 @@
 const request = require('request-promise');
+const { MongoClient, ObjectId } = require('mongodb');
+const waitForConn = require('./waitForConn');
+
+const mongoHost = 'mongodb://localhost:27017';
+const dbName = 'articleman';
+
+const client = new MongoClient(mongoHost);
+
 require('../index.js');
 
 const baseUrl = 'http://localhost:3000/api/v1/article';
@@ -8,16 +16,26 @@ const headers = {
 }
 
 describe('articleManager API - Article Routes', () => {
+  let db, users, articles = [];
+
   // Wait until server is available
   beforeAll(async (done) => {
-    while(1) {
-      try {
-        await request.get('http://localhost:3000');
-        break;
-      } catch(err) {
+    await waitForConn('http://localhost:3000');
+
+    client.connect(async (err) => {
+      if (err) {
+        return fail('Failed to connect to MongoDB server, shutting down');
       }
-    }
-    done();
+    
+      db = client.db(dbName);
+
+      const { ops } = await db.collection('users').insertMany([
+        { name: 'Test User 1' }, { name: 'Test User 2' }, { name: 'Test User 3' }
+      ]);
+
+      users = ops;
+      done();
+    });
   });
 
   it('should return 403 if no token is provided', async(done) => {
@@ -53,10 +71,10 @@ describe('articleManager API - Article Routes', () => {
 
   it('should return 200 when posting new article', async (done) => {
     try {
-      await request.post(baseUrl, {
+      const response = await request.post(baseUrl, {
         method: 'POST',
         body: {
-          userId: 1,
+          userId: users[0]._id,
           title: 'An Artcile',
           text: 'Praesent tempor vitae nisl eu pellentesque. Donec in lorem vitae ligula convallis laoreet.',
           tags: ['Tag1']
@@ -64,6 +82,7 @@ describe('articleManager API - Article Routes', () => {
         json: true,
         headers
       });
+      articles.push(response);
     } catch(err) {
       fail('not 200');
     } finally {
@@ -71,12 +90,33 @@ describe('articleManager API - Article Routes', () => {
     }
   });
 
+  it('should insert article to DB', async (done) => {
+    const result = await db.collection('articles').findOne({_id: new ObjectId(articles[0])});
+    expect(result).toEqual({
+      _id: new ObjectId(articles[0]),
+      userId: users[0]._id,
+      title: 'An Artcile',
+      text: 'Praesent tempor vitae nisl eu pellentesque. Donec in lorem vitae ligula convallis laoreet.',
+      tags: ['Tag1']
+    });
+    done();
+  });
+
   it('should return 200 when getting all articles', async (done) => {
     try {
-      await request.get(baseUrl, {
+      const response = await request.get(baseUrl, {
         qs: {tags: 'Tag1'},
         json: true,
         headers
+      });
+
+      expect(response.length).toBe(1);
+      expect(response[0]).toEqual({
+        _id: articles[0],
+        userId: users[0]._id.toString(),
+        title: 'An Artcile',
+        text: 'Praesent tempor vitae nisl eu pellentesque. Donec in lorem vitae ligula convallis laoreet.',
+        tags: ['Tag1']
       });
     } catch(err) {
       fail('not 200');
@@ -87,11 +127,10 @@ describe('articleManager API - Article Routes', () => {
 
   it('should return 200 when updating an article', async (done) => {
     try {
-      await request.put(`${baseUrl}/1`, {
+      await request.put(`${baseUrl}/${articles[0]}`, {
         body: {
-          userId: 1,
+          userId: users[0]._id,
           title: 'An Artcile 2',
-          text: 'Praesent tempor vitae nisl eu pellentesque. Donec in lorem vitae ligula convallis laoreet.',
           tags: ['Tag1', 'Tag2']
         },
         json: true,
@@ -104,13 +143,37 @@ describe('articleManager API - Article Routes', () => {
     }
   });
 
+  it('should update article on DB', async (done) => {
+    const result = await db.collection('articles').findOne({_id: new ObjectId(articles[0])});
+    expect(result).toEqual({
+      _id: new ObjectId(articles[0]),
+      userId: users[0]._id,
+      title: 'An Artcile 2',
+      text: 'Praesent tempor vitae nisl eu pellentesque. Donec in lorem vitae ligula convallis laoreet.',
+      tags: ['Tag1', 'Tag2']
+    });
+    done();
+  });
+
   it('should return 200 when deleting an article', async (done) => {
     try {
-      await request.delete(`${baseUrl}/1`, { headers });
+      await request.delete(`${baseUrl}/${articles[0]}`, { headers });
     } catch(err) {
       fail('not 200');
     } finally {
       done();
     }
   });
+
+  it('should delete article from DB', async (done) => {
+    const result = await db.collection('articles').findOne({_id: new ObjectId(articles[0])});
+    expect(result).toBeNull();
+    done();
+  });
+
+  afterAll(async (done) => {
+    await db.collection('users').deleteMany({_id: {$in: users.map(user => user._id)}});
+    client.close();
+    done();
+  })
 });
